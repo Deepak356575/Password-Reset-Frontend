@@ -16,6 +16,8 @@ export const registerUser = async (userData) => {
   console.log('Registration response:', result);
 
     try {
+      console.log('Sending registration data:', userData);
+
         // Convert 'name' to 'username' to match backend expectations
         const requestData = {
             username: userData.name, // Converting name to username
@@ -23,36 +25,24 @@ export const registerUser = async (userData) => {
             password: userData.password
         };
 
-        console.log('Registration request data:', userData);
+        console.log('Structured request data:', requestData);
 
 
         const response = await api.post('/api/auth/register', userData);
-        console.log('API response:', response.data);
-        return response.data;
+        console.log('Registration response:', response.data);
+        return {
+          success: true,
+          message: response.data.message,
+          data: response.data
+      };
     } catch (error) {
-        if (error.response) {
-            // Server responded with error
-            console.error('Registration error:', error.response.data);
-            return {
-                success: false,
-                message: error.response.data.message || 'Registration failed'
-            };
-        } else if (error.request) {
-            // Request made but no response
-            console.error('No response received:', error.request);
-            return {
-                success: false,
-                message: 'No response from server'
-            };
-        } else {
-            // Error setting up request
-            console.error('Request setup error:', error.message);
-            return {
-                success: false,
-                message: 'Failed to make request'
-            };
-        }
-    }
+      console.error('Registration error:', error.response?.data || error);
+      return {
+          success: false,
+          message: error.response?.data?.message || 'Registration failed',
+          error: error.response?.data?.error || error.message
+      };
+  }
 };
 
 export const loginUser = async (credentials) => {
