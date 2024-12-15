@@ -18,6 +18,13 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
+    // Debug log
+    console.log('Form submission data:', {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password
+  });
+
       // Add validation for username
       if (!formData.username.trim()) {
         setError('Username is required');
@@ -51,6 +58,8 @@ const Register = () => {
         email: formData.email,
         password: formData.password
       });
+
+      console.log('Registration response:', result);
       
       if (result.success) {
         // Registration successful

@@ -12,6 +12,9 @@ const api = axios.create({
 
 // Auth endpoints
 export const registerUser = async (userData) => {
+
+  console.log('Registration response:', result);
+
     try {
         // Convert 'name' to 'username' to match backend expectations
         const requestData = {
@@ -23,7 +26,8 @@ export const registerUser = async (userData) => {
         console.log('Registration request data:', userData);
 
 
-        const response = await api.post('/api/auth/register', requestData);
+        const response = await api.post('/api/auth/register', userData);
+        console.log('API response:', response.data);
         return response.data;
     } catch (error) {
         if (error.response) {
