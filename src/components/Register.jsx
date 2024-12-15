@@ -5,7 +5,7 @@ import { registerUser } from '../utils/api';  // Remove safeApiCall from import
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -34,7 +34,7 @@ const Register = () => {
 
     try {
       const result = await registerUser({
-        name: formData.name,
+        username: formData.username,
         email: formData.email,
         password: formData.password
       });
@@ -70,9 +70,9 @@ const Register = () => {
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                placeholder="User name"
+                value={formData.username}
+                onChange={(e) => setFormData({...formData, username: e.target.value})}
                 disabled={loading}
               />
             </div>
