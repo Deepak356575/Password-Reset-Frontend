@@ -18,6 +18,12 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
+      // Add validation for username
+      if (!formData.username.trim()) {
+        setError('Username is required');
+        return;
+      }
+
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -31,6 +37,13 @@ const Register = () => {
     }
 
     setLoading(true);
+
+     // Log the data being sent
+     console.log('Sending registration data:', {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password
+    });
 
     try {
       const result = await registerUser({
