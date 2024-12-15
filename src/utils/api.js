@@ -18,16 +18,7 @@ export const registerUser = async (userData) => {
     try {
       console.log('Sending registration data:', userData);
 
-        // Convert 'name' to 'username' to match backend expectations
-        const requestData = {
-            username: userData.name, // Converting name to username
-            email: userData.email,
-            password: userData.password
-        };
-
-        console.log('Structured request data:', requestData);
-
-
+      
         const response = await api.post('/api/auth/register', userData);
         console.log('Registration response:', response.data);
         return {
@@ -36,14 +27,15 @@ export const registerUser = async (userData) => {
           data: response.data
       };
     } catch (error) {
-      console.error('Registration error:', error.response?.data || error);
+      console.error('API Error:', error.response?.data || error);
+      
       return {
-          success: false,
-          message: error.response?.data?.message || 'Registration failed',
-          error: error.response?.data?.error || error.message
+        success: false,
+        message: error.response?.data?.message || 'Registration failed',
+        error: error.response?.data?.error || error.message
       };
-  }
-};
+    }
+  };
 
 export const loginUser = async (credentials) => {
     try {

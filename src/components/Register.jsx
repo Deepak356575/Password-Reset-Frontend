@@ -10,6 +10,7 @@ const Register = () => {
     password: '',
     confirmPassword: ''
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -17,61 +18,29 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    // Debug log
-    console.log('Form submission data:', {
-      username: formData.username,
-      email: formData.email,
-      password: formData.password
-  });
-
-      // Add validation for username
-      if (!formData.username.trim()) {
-        setError('Username is required');
-        return;
-      }
-
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    // Validate password strength
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
-      return;
-    }
-
     setLoading(true);
 
-     // Log the data being sent
-     console.log('Sending registration data:', {
-      username: formData.username,
-      email: formData.email,
-      password: formData.password
-    });
-
     try {
-      const result = await registerUser({
+      console.log('Form submission data:', formData);
+
+      const response = await registerUser({
         username: formData.username,
         email: formData.email,
         password: formData.password
       });
 
-      console.log('Registration response:', result);
-      
-      if (result.success) {
-        // Registration successful
+      console.log('Registration response:', response);
+
+      if (response && response.success) {
         navigate('/login', { 
           state: { message: 'Registration successful! Please login.' }
         });
       } else {
-        setError(result.message || 'Registration failed. Please try again.');
+        setError(response?.message || 'Registration failed. Please try again.');
       }
     } catch (err) {
-      setError('An error occurred during registration. Please try again.');
       console.error('Registration error:', err);
+      setError(err?.response?.data?.message || 'An error occurred during registration.');
     } finally {
       setLoading(false);
     }
