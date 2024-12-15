@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000'; // Add fallback URL
+// Define the API_URL - this was missing in your original file
+const API_URL = 'http://localhost:5000'; // adjust if your backend URL is different
 
 // Create axios instance with default config
 const api = axios.create({
@@ -10,63 +11,109 @@ const api = axios.create({
   },
 });
 
+// Add request interceptor for logging
+api.interceptors.request.use(
+  (config) => {
+    console.log('Making API request:', {
+      url: config.url,
+      method: config.method,
+      data: config.data
+    });
+    return config;
+  },
+  (error) => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', response.data);
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', {
+      message: error.message,
+      response: error.response?.data
+    });
+    return Promise.reject(error);
+  }
+);
+
 // Auth endpoints
 export const registerUser = async (userData) => {
-
-  console.log('Registration response:', result);
-
-    try {
-      console.log('Sending registration data:', userData);
-
-      
-        const response = await api.post('/api/auth/register', userData);
-        console.log('Registration response:', response.data);
-        return {
-          success: true,
-          message: response.data.message,
-          data: response.data
-      };
-    } catch (error) {
-      console.error('API Error:', error.response?.data || error);
-      
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Registration failed',
-        error: error.response?.data?.error || error.message
-      };
-    }
-  };
+  try {
+    const response = await api.post('/api/auth/register', userData);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message
+    };
+  }
+};
 
 export const loginUser = async (credentials) => {
-    try {
-        const response = await api.post('/api/auth/login', credentials);
-        return response.data;
-    } catch (error) {
-        console.error('Login error:', error.response?.data || error);
-        throw error;
-    }
+  try {
+    const response = await api.post('/api/auth/login', credentials);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message
+    };
+  }
 };
 
 export const forgotPassword = async (email) => {
-    try {
-        const response = await api.post('/api/auth/forgot-password', { email });
-        return response.data;
-    } catch (error) {
-        console.error('Forgot password error:', error.response?.data || error);
-        throw error;
-    }
+  try {
+    const response = await api.post('/api/auth/forgot-password', { email });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message
+    };
+  }
 };
 
 export const resetPassword = async (token, password) => {
-    try {
-        const response = await api.post(`/api/auth/reset-password/${token}`, { 
-            password 
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Reset password error:', error.response?.data || error);
-        throw error;
-    }
+  try {
+    const response = await api.post(`/api/auth/reset-password/${token}`, { 
+      password 
+    });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message
+    };
+  }
+};
+
+// Add a health check endpoint
+export const checkHealth = async () => {
+  try {
+    const response = await api.get('/health');
+    return response.data;
+  } catch (error) {
+    console.error('Health check failed:', error);
+    throw error;
+  }
 };
 
 export default api;
