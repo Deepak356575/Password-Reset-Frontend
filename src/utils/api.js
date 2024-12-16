@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Define the API_URL - this was missing in your original file
-const API_URL = 'http://localhost:5000'; // adjust if your backend URL is different
+const API_URL = 'https://password-reset-backend-nuov.onrender.com'; // adjust if your backend URL is different
 
 // Create axios instance with default config
 const api = axios.create({
