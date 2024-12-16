@@ -61,13 +61,19 @@ const ResetPassword = () => {
                 }, 2000);
             }
         } catch (error) {
-            console.error('Reset password error:', error);
-            setError(error.response?.data?.message || error.message || 'Error resetting password');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
+          console.error('Reset password error details:', {
+              status: error.response?.status,
+              statusText: error.response?.statusText,
+              data: error.response?.data,
+              message: error.message
+          });
+          
+          setError(error.response?.data?.message || 'Error resetting password');
+      } finally {
+          setIsLoading(false);
+      }
+  };
+  
     return (
         <div className="container">
             <div className="reset-password-form">
