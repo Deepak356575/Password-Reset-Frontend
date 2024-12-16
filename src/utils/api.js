@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_URL = 'https://password-reset-backend-nuov.onrender.com'; // adjust if your backend URL is different
 
 // Create axios instance with default config
-const apiClient = axios.create({ baseURL: 'https://password-reset-backend-nuov.onrender.com/api', 
+const apiClient = axios.create({ baseURL: 'https://password-reset-backend-nuov.onrender.com', 
   headers: { 'Content-Type': 'application/json' } });
 
 // Add request interceptor for logging
