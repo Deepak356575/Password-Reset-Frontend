@@ -4,6 +4,7 @@ import axios from 'axios';
 import SuccessMessage from './SuccessMessage';
 
 const ResetPassword = () => {
+  
   const [passwords, setPasswords] = useState({
     password: '',
     confirmPassword: ''
@@ -14,52 +15,51 @@ const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
+  console.log("Token from params:", token);
+
+
   // Your backend URL
-  const BACKEND_URL = 'https://password-reset-backend-nuov.onrender.com'; // Your actual backend URL
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
-    // Validate token
+    // Validation checks
     if (!token) {
       setError('Invalid reset token');
+      setIsLoading(false);
       return;
     }
 
-    // Validate passwords
+    if (!passwords.password || !passwords.confirmPassword) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
     if (passwords.password !== passwords.confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
-    if (passwords.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    setIsLoading(true);
     try {
-      console.log('Sending reset request to:', `${BACKEND_URL}/api/auth/reset-password/${token}`);
-      
+      // Correct URL construction
       const response = await axios.post(
-        `${BACKEND_URL}/api/auth/reset-password/${token}`,
-        { newPassword: passwords.password },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+        `https://ozbourne-pass-reset.netlify.app/api/auth/reset-password/${token}`,
+        { newPassword: passwords.password }
       );
 
-      console.log('Reset response:', response.data);
-      setIsSuccess(true);
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
+      if (response.data.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      }
     } catch (err) {
-      console.error('Reset error:', err);
-      setError(err.response?.data?.message || 'Error resetting password. Please try again.');
+      console.error('Reset password error:', err);
+      setError(err.response?.data?.message || 'An error occurred while resetting password');
     } finally {
       setIsLoading(false);
     }
