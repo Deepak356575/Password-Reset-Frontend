@@ -19,6 +19,8 @@ const ResetPassword = () => {
         }
     }, [token]);
 
+
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -73,7 +75,7 @@ const ResetPassword = () => {
           setIsLoading(false);
       }
   };
-  
+
     return (
         <div className="container">
             <div className="reset-password-form">
