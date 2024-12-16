@@ -41,7 +41,7 @@ function ResetPassword() {  // Changed to function declaration
 
       // API call
       const response = await axios.post(
-        `https://password-reset-backend-nuov.onrender.com//api/auth/reset-password/${token}`,
+        `https://password-reset-backend-nuov.onrender.com/api/auth/reset-password/${token}`,
         { newPassword: passwords.password },
         {
           headers: {
