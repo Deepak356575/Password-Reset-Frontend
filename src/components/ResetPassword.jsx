@@ -14,41 +14,49 @@ const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
-  // Define your backend URL
-  const BACKEND_URL = process.env.REACT_APP_API_URL || 'https://password-reset-backend-nuov.onrender.com/' ; // Replace with your actual backend URL
-
-  const validatePassword = () => {
-    if (passwords.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return false;
-    }
-    if (passwords.password !== passwords.confirmPassword) {
-      setError('Passwords do not match');
-      return false;
-    }
-    return true;
-  };
+  // Your backend URL
+  const BACKEND_URL = 'https://password-reset-backend-nuov.onrender.com'; // Your actual backend URL
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Debug logs
-    console.log('Token:', token);
-    console.log('Attempting password reset...');
+    // Validate token
+    if (!token) {
+      setError('Invalid reset token');
+      return;
+    }
 
-    if (!validatePassword()) return;
+    // Validate passwords
+    if (passwords.password !== passwords.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (passwords.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
 
     setIsLoading(true);
     try {
-      // Make sure to use the correct backend URL
+      console.log('Sending reset request to:', `${BACKEND_URL}/api/auth/reset-password/${token}`);
+      
       const response = await axios.post(
         `${BACKEND_URL}/api/auth/reset-password/${token}`,
-        { newPassword: passwords.password }
+        { newPassword: passwords.password },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
 
       console.log('Reset response:', response.data);
       setIsSuccess(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (err) {
       console.error('Reset error:', err);
       setError(err.response?.data?.message || 'Error resetting password. Please try again.');
@@ -58,20 +66,19 @@ const ResetPassword = () => {
   };
 
   const handleChange = (e) => {
-    setPasswords({
-      ...passwords,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setPasswords(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   if (isSuccess) {
-    return (
-      <SuccessMessage 
-        message="Your password has been reset successfully!" 
-        redirectTo="/login"
-        timeout={3000}
-      />
-    );
+    return <SuccessMessage 
+      message="Password reset successful! Redirecting to login..." 
+      redirectTo="/login"
+      timeout={3000}
+    />;
   }
 
   return (
@@ -102,7 +109,11 @@ const ResetPassword = () => {
               minLength="6"
             />
           </div>
-          <button type="submit" disabled={isLoading}>
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className={isLoading ? 'loading' : ''}
+          >
             {isLoading ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
