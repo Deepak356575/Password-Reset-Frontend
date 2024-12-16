@@ -73,7 +73,7 @@ export const forgotPassword = async (email) => {
   }
 };
 
-export const resetPassword = (token, newPassword) => { return apiClient.post(`/auth/reset-password/${token}`, { password: newPassword }); };
+export const resetPassword = (token, newPassword) => { return apiClient.post(`/api/auth/reset-password/${token}`, { password: newPassword }); };
 
 // Add a health check endpoint
 export const checkHealth = async () => {
