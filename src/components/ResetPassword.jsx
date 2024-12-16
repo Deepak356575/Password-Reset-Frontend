@@ -47,7 +47,7 @@ const ResetPassword = () => {
     try {
       // Correct URL construction
       const response = await axios.post(
-        `https://ozbourne-pass-reset.netlify.app/api/auth/reset-password/${token}`,
+        `https://password-reset-backend-nuov.onrender.com/api/auth/reset-password/${token}`,
         { newPassword: passwords.password }
       );
 
