@@ -4,43 +4,28 @@ import axios from 'axios';
 const API_URL = 'https://password-reset-backend-nuov.onrender.com'; // adjust if your backend URL is different
 
 // Create axios instance with default config
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const apiClient = axios.create({ baseURL: 'https://password-reset-backend-nuov.onrender.com/api', 
+  headers: { 'Content-Type': 'application/json' } });
 
 // Add request interceptor for logging
-api.interceptors.request.use(
-  (config) => {
-    console.log('Making API request:', {
-      url: config.url,
-      method: config.method,
-      data: config.data
-    });
-    return config;
-  },
-  (error) => {
-    console.error('Request error:', error);
-    return Promise.reject(error);
-  }
-);
+apiClient.interceptors.response.use( response => response, error => 
+  { 
+    if (error.response) 
+      { console.error('CORS error:', error.response.data);
 
-// Add response interceptor for better error handling
-api.interceptors.response.use(
-  (response) => {
-    console.log('API Response:', response.data);
-    return response;
-  },
-  (error) => {
-    console.error('API Error:', {
-      message: error.message,
-      response: error.response?.data
-    });
-    return Promise.reject(error);
-  }
-);
+       }
+        else if (error.request)
+           { 
+            console.error('CORS error: No response received');
+           }
+           else 
+           { console.error('Error:', error.message);
+           
+          } 
+return Promise.reject(error); 
+} );
+
+
 
 // Auth endpoints
 export const registerUser = async (userData) => {
@@ -88,22 +73,7 @@ export const forgotPassword = async (email) => {
   }
 };
 
-export const resetPassword = async (token, password) => {
-  try {
-    const response = await api.post(`/api/auth/reset-password/${token}`, { 
-      password 
-    });
-    return {
-      success: true,
-      data: response.data
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.response?.data?.message || error.message
-    };
-  }
-};
+export const resetPassword = (token, newPassword) => { return apiClient.post(`/auth/reset-password/${token}`, { password: newPassword }); };
 
 // Add a health check endpoint
 export const checkHealth = async () => {
