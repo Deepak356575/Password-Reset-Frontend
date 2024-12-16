@@ -36,8 +36,8 @@ const ResetPassword = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, {
-        password: passwords.password
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/reset-password/${token}`, {
+        newpassword: passwords.password
       });
       setIsSuccess(true); // Set success state instead of using message
     } catch (err) {
