@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessMessage from './SuccessMessage';
 
 const ResetPassword = () => {
-  
+  const { token } = useParams();
+  const navigate = useNavigate();
   const [passwords, setPasswords] = useState({
     password: '',
     confirmPassword: ''
@@ -12,54 +13,63 @@ const ResetPassword = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { token } = useParams();
-  const navigate = useNavigate();
 
-  console.log("Token from params:", token);
-
-
-  // Your backend URL
+  // Add useEffect to validate token on component mount
+  useEffect(() => {
+    if (!token) {
+      setError('Invalid reset token');
+      console.error('Token is missing from URL params');
+    } else {
+      console.log('Token received:', token);
+    }
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    // Validation checks
-    if (!token) {
-      setError('Invalid reset token');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!passwords.password || !passwords.confirmPassword) {
-      setError('Please fill in all fields');
-      setIsLoading(false);
-      return;
-    }
-
-    if (passwords.password !== passwords.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Correct URL construction
-      const response = await axios.post(
-        `https://password-reset-backend-nuov.onrender.com/api/auth/reset-password/${token}`,
-        { newPassword: passwords.password }
-      );
+      // Basic validations
+      if (!token) {
+        throw new Error('Invalid reset token');
+      }
+
+      if (!passwords.password || !passwords.confirmPassword) {
+        throw new Error('Please fill in all fields');
+      }
+
+      if (passwords.password !== passwords.confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+
+      if (passwords.password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
+      }
+
+      // Make the API call directly to the backend URL
+      const response = await axios({
+        method: 'POST',
+        url: 'https://password-reset-backend-ywk6.onrender.com/api/auth/reset-password/' + token,
+        data: { 
+          newPassword: passwords.password 
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Reset password response:', response.data);
 
       if (response.data.success) {
-        setSuccess(true);
+        setIsSuccess(true);
         setTimeout(() => {
           navigate('/login');
         }, 3000);
       }
     } catch (err) {
       console.error('Reset password error:', err);
-      setError(err.response?.data?.message || 'An error occurred while resetting password');
+      setError(err.response?.data?.message || err.message || 'An error occurred while resetting password');
     } finally {
       setIsLoading(false);
     }
@@ -96,6 +106,7 @@ const ResetPassword = () => {
               onChange={handleChange}
               required
               minLength="6"
+              disabled={!token}
             />
           </div>
           <div className="form-group">
@@ -107,11 +118,12 @@ const ResetPassword = () => {
               onChange={handleChange}
               required
               minLength="6"
+              disabled={!token}
             />
           </div>
           <button 
             type="submit" 
-            disabled={isLoading}
+            disabled={isLoading || !token}
             className={isLoading ? 'loading' : ''}
           >
             {isLoading ? 'Resetting...' : 'Reset Password'}
@@ -123,3 +135,4 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
+    
