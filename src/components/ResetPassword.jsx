@@ -3,26 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessMessage from './SuccessMessage';
 
-const ResetPassword = () => {
-  const { token } = useParams();
-  const navigate = useNavigate();
-  const [passwords, setPasswords] = useState({
-    password: '',
-    confirmPassword: ''
-  });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+const resetPassword = async (token, newPassword) => {
+  try {
+      const response = await axios.post(
+          `https://password-reset-backend-nuov.onrender.com//api/auth/reset-password/${token}`,
+          { newPassword },
+          {
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          }
+      );
+      return response.data;
+  } catch (error) {
+      console.error('Reset password error:', error);
+      throw error;
+  }
 
-  // Add useEffect to validate token on component mount
-  useEffect(() => {
-    if (!token) {
-      setError('Invalid reset token');
-      console.error('Token is missing from URL params');
-    } else {
-      console.log('Token received:', token);
-    }
-  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,7 +47,7 @@ const ResetPassword = () => {
       // Make the API call directly to the backend URL
       const response = await axios({
         method: 'POST',
-        url: 'https://password-reset-backend-ywk6.onrender.com/api/auth/reset-password/' + token,
+        url: 'https://password-reset-backend-nuov.onrender.com/api/auth/reset-password/' + token,
         data: { 
           newPassword: passwords.password 
         },
@@ -135,4 +132,3 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
-    
