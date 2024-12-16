@@ -1,25 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessMessage from './SuccessMessage';
 
-const resetPassword = async (token, newPassword) => {
-  try {
-      const response = await axios.post(
-          `https://password-reset-backend-nuov.onrender.com//api/auth/reset-password/${token}`,
-          { newPassword },
-          {
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          }
-      );
-      return response.data;
-  } catch (error) {
-      console.error('Reset password error:', error);
-      throw error;
-  }
+function ResetPassword() {  // Changed to function declaration
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const [passwords, setPasswords] = useState({
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
+  console.log("Current token:", token); // Debug log
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +22,7 @@ const resetPassword = async (token, newPassword) => {
     setIsLoading(true);
 
     try {
-      // Basic validations
+      // Validations
       if (!token) {
         throw new Error('Invalid reset token');
       }
@@ -44,17 +39,16 @@ const resetPassword = async (token, newPassword) => {
         throw new Error('Password must be at least 6 characters long');
       }
 
-      // Make the API call directly to the backend URL
-      const response = await axios({
-        method: 'POST',
-        url: 'https://password-reset-backend-nuov.onrender.com/api/auth/reset-password/' + token,
-        data: { 
-          newPassword: passwords.password 
-        },
-        headers: {
-          'Content-Type': 'application/json'
+      // API call
+      const response = await axios.post(
+        `https://password-reset-backend-ywk6.onrender.com/api/auth/reset-password/${token}`,
+        { newPassword: passwords.password },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       console.log('Reset password response:', response.data);
 
@@ -129,6 +123,6 @@ const resetPassword = async (token, newPassword) => {
       </div>
     </div>
   );
-};
+}
 
 export default ResetPassword;
